@@ -2,8 +2,8 @@
 #include <cstdint>
 
 // WiFi credentials
-static const char *WIFI_SSID = "Bingus Network";
-static const char *WIFI_PASSWORD = "xirl7972";
+static const char *WIFI_SSID = "Grove Island";
+static const char *WIFI_PASSWORD = "island1234";
 
 // MQTT Broker settings
 static const char *MQTT_HOST = "alderaan.software-engineering.ie";

@@ -15,6 +15,9 @@ void setup()
     Serial.begin(115200);
     delay(1000);
 
+    // Connect to WiFi before starting MQTT
+    wifi_connect(WIFI_SSID, WIFI_PASSWORD);
+
     mqtt_begin(
         MQTT_HOST,
         MQTT_PORT,
