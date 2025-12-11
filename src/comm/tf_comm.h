@@ -14,6 +14,9 @@ extern "C" {
 #define MSG_TYPE_CMD         0x04
 
 // Callbacks for application layer
+// WARNING: These callbacks are invoked while holding an internal mutex.
+// Do NOT call tf_comm_send_*() from within callbacks - this will deadlock.
+// If you need to send a response, queue the data and send from another context.
 typedef void (*tf_heartbeat_response_cb)(const uint8_t *data, uint16_t len);
 typedef void (*tf_heartbeat_timeout_cb)(void);
 typedef void (*tf_data_received_cb)(const uint8_t *data, uint16_t len);
