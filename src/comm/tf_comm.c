@@ -61,12 +61,12 @@ static TF_Result heartbeat_timeout_listener(TinyFrame *tf)
     return TF_CLOSE;
 }
 
-// Internal listener for incoming data messages
-static TF_Result data_listener(TinyFrame *tf, TF_Msg *msg)
+// Internal listener for incoming messages from MAX32655
+static TF_Result comms_listener(TinyFrame *tf, TF_Msg *msg)
 {
     (void)tf;
-    if (app_config.on_data_received && msg->data) {
-        app_config.on_data_received(msg->data, msg->len);
+    if (app_config.on_max_message && msg->data) {
+        app_config.on_max_message(msg->data, msg->len);
     }
     return TF_STAY;
 }
@@ -159,7 +159,7 @@ void tf_comm_init(const tf_comm_config_t *config)
     uart_init_internal();
 
     TF_InitStatic(tf, TF_MASTER);
-    TF_AddTypeListener(tf, MSG_TYPE_DATA, data_listener);
+    TF_AddTypeListener(tf, MSG_TYPE_COMMS, comms_listener);
     TF_AddGenericListener(tf, generic_listener);
 
     printf("[TF] Init (GPIO%d RX, GPIO%d TX @ %d baud)\n", MAX_RX_PIN, MAX_TX_PIN, UART_BAUD);
@@ -168,10 +168,10 @@ void tf_comm_init(const tf_comm_config_t *config)
     xTaskCreate(tf_comm_task, "tf_comm", TF_TASK_STACK_SIZE, NULL, TF_TASK_PRIORITY, &tf_task_handle);
 }
 
-bool tf_comm_send_data(const uint8_t *data, uint16_t len)
+bool tf_comm_send_cmd(const uint8_t *data, uint16_t len)
 {
     xSemaphoreTake(tf_mutex, portMAX_DELAY);
-    bool result = TF_SendSimple(tf, MSG_TYPE_DATA, data, len);
+    bool result = TF_SendSimple(tf, MSG_TYPE_COMMS, data, len);
     xSemaphoreGive(tf_mutex);
     return result;
 }
@@ -180,14 +180,6 @@ bool tf_comm_send_estop(const uint8_t *data, uint16_t len)
 {
     xSemaphoreTake(tf_mutex, portMAX_DELAY);
     bool result = TF_SendSimple(tf, MSG_TYPE_ESTOP, data, len);
-    xSemaphoreGive(tf_mutex);
-    return result;
-}
-
-bool tf_comm_send_cmd(const uint8_t *data, uint16_t len)
-{
-    xSemaphoreTake(tf_mutex, portMAX_DELAY);
-    bool result = TF_SendSimple(tf, MSG_TYPE_CMD, data, len);
     xSemaphoreGive(tf_mutex);
     return result;
 }
