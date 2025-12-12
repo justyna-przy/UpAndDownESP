@@ -15,7 +15,7 @@
 
 static const char *TAG = "MAIN";
 
-extern "C" void app_main(void)
+void app_main(void)
 {
     // Initialize NVS (required for WiFi)
     esp_err_t ret = nvs_flash_init();
