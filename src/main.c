@@ -37,7 +37,7 @@ void app_main(void)
     tf_comm_config_t tf_config = {};
     tf_config.on_heartbeat_response = on_heartbeat_response;
     tf_config.on_heartbeat_timeout = on_heartbeat_timeout;
-    tf_config.on_data_received = on_data_received;
+    tf_config.on_max_message = on_max_message;
     tf_config.heartbeat_interval_ms = 10000;  // 10 second heartbeat
     tf_config.heartbeat_timeout_ticks = 500;
     tf_comm_init(&tf_config);

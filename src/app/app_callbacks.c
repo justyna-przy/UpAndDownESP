@@ -35,11 +35,10 @@ void on_heartbeat_timeout(void)
     }
 }
 
-void on_data_received(const uint8_t *data, uint16_t len)
+void on_max_message(const uint8_t *data, uint16_t len)
 {
-    ESP_LOGI(TAG, "Data [%d bytes]", len);
+    ESP_LOGI(TAG, "MAX32655 [%d bytes]", len);
     ESP_LOG_BUFFER_HEX(TAG, data, len);
-    // Bridge to MQTT if needed: mqtt_publish_event(...)
 }
 
 // MQTT command callback - forward commands to MAX32655 via TinyFrame

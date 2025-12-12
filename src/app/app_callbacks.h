@@ -10,8 +10,8 @@ extern "C" {
 void on_heartbeat_response(const uint8_t *data, uint16_t len);
 void on_heartbeat_timeout(void);
 
-// TinyFrame callback - data
-void on_data_received(const uint8_t *data, uint16_t len);
+// TinyFrame callback - messages from MAX32655 (status, reports, etc.)
+void on_max_message(const uint8_t *data, uint16_t len);
 
 // MQTT command callback
 void on_mqtt_command(const char *payload, int len);
