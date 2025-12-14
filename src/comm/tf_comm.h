@@ -7,11 +7,10 @@
 extern "C" {
 #endif
 
-// Message types
+// Message types (must match MAX32655)
 #define MSG_TYPE_HEARTBEAT   0x01
-#define MSG_TYPE_DATA        0x02
-#define MSG_TYPE_ESTOP       0x03
-#define MSG_TYPE_CMD         0x04
+#define MSG_TYPE_ESTOP       0x02
+#define MSG_TYPE_COMMS       0x03  // General bidirectional, low priority
 
 // Callbacks for application layer
 // WARNING: These callbacks are invoked while holding an internal mutex.
@@ -19,7 +18,7 @@ extern "C" {
 // If you need to send a response, queue the data and send from another context.
 typedef void (*tf_heartbeat_response_cb)(const uint8_t *data, uint16_t len);
 typedef void (*tf_heartbeat_timeout_cb)(void);
-typedef void (*tf_data_received_cb)(const uint8_t *data, uint16_t len);
+typedef void (*tf_max_message_cb)(const uint8_t *data, uint16_t len);
 
 // Configuration
 typedef struct {
@@ -27,8 +26,8 @@ typedef struct {
     tf_heartbeat_response_cb on_heartbeat_response;  // MAX32655 responded
     tf_heartbeat_timeout_cb on_heartbeat_timeout;    // MAX32655 didn't respond
 
-    // Data callback
-    tf_data_received_cb on_data_received;
+    // Callback for messages from MAX32655 (status, reports, etc.)
+    tf_max_message_cb on_max_message;
 
     // Timing
     uint32_t heartbeat_interval_ms;   // How often to send heartbeats
@@ -38,13 +37,10 @@ typedef struct {
 // Initialize TinyFrame communication (starts background task)
 void tf_comm_init(const tf_comm_config_t *config);
 
-// Send data (no response expected)
-bool tf_comm_send_data(const uint8_t *data, uint16_t len);
-
 // Send e-stop (high priority on receiver)
 bool tf_comm_send_estop(const uint8_t *data, uint16_t len);
 
-// Send command (low priority on receiver)
+// Send command to MAX32655 (low priority on receiver)
 bool tf_comm_send_cmd(const uint8_t *data, uint16_t len);
 
 #ifdef __cplusplus
