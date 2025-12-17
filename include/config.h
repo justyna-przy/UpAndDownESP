@@ -2,8 +2,8 @@
 #include <stdint.h>
 
 // WiFi credentials
-#define WIFI_SSID     "dev22"
-#define WIFI_PASSWORD "testtest"
+#define WIFI_SSID     "Grove Island"
+#define WIFI_PASSWORD "island1234"
 
 // MQTT Broker settings
 #define MQTT_HOST "alderaan.software-engineering.ie"
