@@ -42,23 +42,23 @@ static void on_state_event(const state_event_t *evt)
     char msg[64];
 
     switch (evt->event_type) {
-        case EVT_STOPPED_AT_FLOOR:
+        case PROTO_EVT_STOPPED_AT_FLOOR:
             snprintf(msg, sizeof(msg), "stopped_at_floor_%d", evt->data);
             break;
 
-        case EVT_CABIN_BUTTON:
+        case PROTO_EVT_CABIN_BUTTON:
             snprintf(msg, sizeof(msg), "cabin_button_%d", evt->data);
             break;
 
-        case EVT_CALL_BUTTON:
+        case PROTO_EVT_CALL_BUTTON:
             snprintf(msg, sizeof(msg), "call_button_%d", evt->data);
             break;
 
-        case EVT_ESTOP_ACTIVATED:
+        case PROTO_EVT_ESTOP_ACTIVATED:
             snprintf(msg, sizeof(msg), "estop_activated");
             break;
 
-        case EVT_ESTOP_RELEASED:
+        case PROTO_EVT_ESTOP_RELEASED:
             snprintf(msg, sizeof(msg), "estop_released");
             break;
 

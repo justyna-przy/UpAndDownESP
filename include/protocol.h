@@ -34,15 +34,16 @@ typedef enum {
 } cmd_status_t;
 
 // ============================================
-// Event Types (Maxim -> ESP, unsolicited)
+// Protocol Event Types (Maxim -> ESP, unsolicited)
+// Prefixed with PROTO_ to avoid collision with internal state machine events
 // ============================================
 typedef enum {
-    EVT_STOPPED_AT_FLOOR    = 0x01,  // data = floor number
-    EVT_CABIN_BUTTON        = 0x02,  // data = destination floor
-    EVT_CALL_BUTTON         = 0x03,  // data = call_button_t
-    EVT_ESTOP_ACTIVATED     = 0x04,  // data = unused
-    EVT_ESTOP_RELEASED      = 0x05,  // data = unused
-} event_type_t;
+    PROTO_EVT_STOPPED_AT_FLOOR  = 0x01,  // data = floor number
+    PROTO_EVT_CABIN_BUTTON      = 0x02,  // data = destination floor
+    PROTO_EVT_CALL_BUTTON       = 0x03,  // data = call_button_t
+    PROTO_EVT_ESTOP_ACTIVATED   = 0x04,  // data = unused
+    PROTO_EVT_ESTOP_RELEASED    = 0x05,  // data = unused
+} proto_event_type_t;
 
 // ============================================
 // Call Button IDs
