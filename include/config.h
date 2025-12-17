@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 // WiFi credentials
-#define WIFI_SSID     "dev"
+#define WIFI_SSID     "dev22"
 #define WIFI_PASSWORD "testtest"
 
 // MQTT Broker settings
