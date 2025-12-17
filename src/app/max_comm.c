@@ -16,16 +16,39 @@ static bool max32655_connected = false;
 
 // === Protocol callbacks ===
 
+static const char *direction_str(uint8_t dir)
+{
+    switch (dir) {
+        case 0: return "stopped";
+        case 1: return "up";
+        case 2: return "down";
+        default: return "unknown";
+    }
+}
+
 static void on_cmd_response(const cmd_response_t *resp)
 {
-    ESP_LOGI(TAG, "CMD response: status=%d data_len=%d", resp->status, resp->data_len);
+    ESP_LOGI(TAG, "CMD response: cmd=%d status=%d data_len=%d", resp->cmd_id, resp->status, resp->data_len);
 
-    if (resp->status == CMD_OK) {
-        mqtt_publish_event("cmd_ok");
-    } else {
+    if (resp->status != CMD_OK) {
         char msg[32];
         snprintf(msg, sizeof(msg), "cmd_err_%d", resp->status);
         mqtt_publish_event(msg);
+        return;
+    }
+
+    // Parse response data based on command type
+    if (resp->cmd_id == CMD_GET_STATUS && resp->data_len >= 3) {
+        uint8_t floor = resp->data[0];
+        uint8_t direction = resp->data[1];
+        uint8_t dest_bitmask = resp->data[2];
+
+        char msg[64];
+        snprintf(msg, sizeof(msg), "status:floor=%d,dir=%s,dest=0x%02X",
+                 floor, direction_str(direction), dest_bitmask);
+        mqtt_publish_event(msg);
+    } else {
+        mqtt_publish_event("cmd_ok");
     }
 }
 
