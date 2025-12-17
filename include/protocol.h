@@ -74,6 +74,7 @@ typedef struct __attribute__((packed)) {
  * Sent via TF_Respond in reply to cmd_request_t
  */
 typedef struct __attribute__((packed)) {
+    uint8_t cmd_id;       // echo of cmd_id_t from request
     uint8_t status;       // cmd_status_t
     uint8_t data[16];     // response data (command-specific)
     uint8_t data_len;     // number of valid bytes in data
