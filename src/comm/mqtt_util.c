@@ -26,7 +26,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base,
             s_connected = true;
             // Subscribe to command topic
             if (s_topic_cmd) {
-                int msg_id = esp_mqtt_client_subscribe(s_mqtt_client, s_topic_cmd, 1);
+                int msg_id = esp_mqtt_client_subscribe(s_mqtt_client, s_topic_cmd, 2);
                 ESP_LOGI(TAG, "Subscribed to '%s' (msg_id=%d)", s_topic_cmd, msg_id);
             }
             break;
@@ -94,7 +94,7 @@ bool mqtt_publish_event(const char *payload)
         return false;
     }
 
-    int msg_id = esp_mqtt_client_publish(s_mqtt_client, s_topic_events, payload, 0, 1, 0);
+    int msg_id = esp_mqtt_client_publish(s_mqtt_client, s_topic_events, payload, 0, 2, 0);
     if (msg_id < 0) {
         ESP_LOGE(TAG, "Publish failed");
         return false;
