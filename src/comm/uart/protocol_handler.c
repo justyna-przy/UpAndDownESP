@@ -1,5 +1,5 @@
-#include "comm/protocol_handler.h"
-#include "comm/tf_transport.h"
+#include "protocol_handler.h"
+#include "tf_transport.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <stdio.h>

@@ -1,8 +1,8 @@
 // MAX32655 communication - application layer
 
 #include "app/max_comm.h"
-#include "comm/tf_transport.h"
-#include "comm/protocol_handler.h"
+#include "comm/uart/tf_transport.h"
+#include "comm/uart/protocol_handler.h"
 #include "comm/mqtt_util.h"
 #include "protocol.h"
 #include "esp_log.h"
