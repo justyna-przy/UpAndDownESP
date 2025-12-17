@@ -10,8 +10,7 @@
 #include "config.h"
 #include "comm/wifi_util.h"
 #include "comm/mqtt_util.h"
-#include "comm/tf_comm.h"
-#include "app/app_callbacks.h"
+#include "app/max_comm.h"
 
 static const char *TAG = "MAIN";
 
@@ -30,17 +29,11 @@ void app_main(void)
     // Connect to WiFi (blocking)
     wifi_init(WIFI_SSID, WIFI_PASSWORD);
 
-    // Initialize MQTT
-    mqtt_init(MQTT_HOST, MQTT_PORT, MQTT_TOPIC_EVENTS, MQTT_TOPIC_CMD, on_mqtt_command);
+    // Initialize MAX32655 communication (transport + protocol layers)
+    MaxComm_Init();
 
-    // Initialize TinyFrame communication (creates background FreeRTOS task)
-    tf_comm_config_t tf_config = {};
-    tf_config.on_heartbeat_response = on_heartbeat_response;
-    tf_config.on_heartbeat_timeout = on_heartbeat_timeout;
-    tf_config.on_max_message = on_max_message;
-    tf_config.heartbeat_interval_ms = 10000;  // 10 second heartbeat
-    tf_config.heartbeat_timeout_ticks = 500;
-    tf_comm_init(&tf_config);
+    // Initialize MQTT (uses MaxComm_OnMqttCommand callback)
+    mqtt_init(MQTT_HOST, MQTT_PORT, MQTT_TOPIC_EVENTS, MQTT_TOPIC_CMD, MaxComm_OnMqttCommand);
 
     ESP_LOGI(TAG, "Setup complete");
 
