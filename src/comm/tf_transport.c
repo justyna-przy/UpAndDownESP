@@ -69,7 +69,7 @@ static void tf_task(void *pvParameters)
         uint8_t rx_buf[32];
         int len = uart_read_bytes(UART_NUM_MAX, rx_buf, sizeof(rx_buf), pdMS_TO_TICKS(10));
 
-        xSemaphoreTake(tf_mutex, portMAX_DELAY);
+        xSemaphoreTakeRecursive(tf_mutex, portMAX_DELAY);
 
         if (len > 0) {
             TF_Accept(tf, rx_buf, len);
@@ -78,14 +78,15 @@ static void tf_task(void *pvParameters)
         // TinyFrame housekeeping
         TF_Tick(tf);
 
-        xSemaphoreGive(tf_mutex);
+        xSemaphoreGiveRecursive(tf_mutex);
     }
 }
 
 void tf_transport_init(void)
 {
-    // Create mutex
-    tf_mutex = xSemaphoreCreateMutex();
+    // Create recursive mutex - allows listeners to call tf_transport_respond
+    // without deadlocking (listener is called while mutex is held)
+    tf_mutex = xSemaphoreCreateRecursiveMutex();
     configASSERT(tf_mutex);
 
     uart_init_internal();
@@ -101,17 +102,17 @@ void tf_transport_init(void)
 
 bool tf_transport_add_listener(uint8_t msg_type, tf_transport_listener_cb callback)
 {
-    xSemaphoreTake(tf_mutex, portMAX_DELAY);
+    xSemaphoreTakeRecursive(tf_mutex, portMAX_DELAY);
     bool result = TF_AddTypeListener(tf, msg_type, callback);
-    xSemaphoreGive(tf_mutex);
+    xSemaphoreGiveRecursive(tf_mutex);
     return result;
 }
 
 bool tf_transport_send(uint8_t msg_type, const uint8_t *data, uint16_t len)
 {
-    xSemaphoreTake(tf_mutex, portMAX_DELAY);
+    xSemaphoreTakeRecursive(tf_mutex, portMAX_DELAY);
     bool result = TF_SendSimple(tf, msg_type, data, len);
-    xSemaphoreGive(tf_mutex);
+    xSemaphoreGiveRecursive(tf_mutex);
     return result;
 }
 
@@ -120,10 +121,10 @@ bool tf_transport_query(uint8_t msg_type, const uint8_t *data, uint16_t len,
                         tf_transport_timeout_cb on_timeout,
                         uint16_t timeout_ticks)
 {
-    xSemaphoreTake(tf_mutex, portMAX_DELAY);
+    xSemaphoreTakeRecursive(tf_mutex, portMAX_DELAY);
     bool result = TF_QuerySimple(tf, msg_type, data, len,
                                   on_response, on_timeout, timeout_ticks);
-    xSemaphoreGive(tf_mutex);
+    xSemaphoreGiveRecursive(tf_mutex);
     return result;
 }
 
@@ -132,8 +133,8 @@ bool tf_transport_respond(TF_Msg *original_msg, const uint8_t *data, uint16_t le
     original_msg->data = data;
     original_msg->len = (TF_LEN)len;
 
-    xSemaphoreTake(tf_mutex, portMAX_DELAY);
+    xSemaphoreTakeRecursive(tf_mutex, portMAX_DELAY);
     bool result = TF_Respond(tf, original_msg);
-    xSemaphoreGive(tf_mutex);
+    xSemaphoreGiveRecursive(tf_mutex);
     return result;
 }
